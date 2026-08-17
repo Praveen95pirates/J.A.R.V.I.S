@@ -70,9 +70,6 @@ jobs:
           cp -rf $ANDROID_HOME/platform-tools/* ~/.buildozer/android/platform/android-sdk/platform-tools/ || true
           mkdir -p ~/.buildozer/android/platform/android-sdk/platforms/android-34
           cp -rf $ANDROID_HOME/platforms/android-34/* ~/.buildozer/android/platform/android-sdk/platforms/android-34/ || true
-          mkdir -p ~/.buildozer/android/platform/android-sdk/tools/bin
-          printf '#!/bin/sh\nexec %s/cmdline-tools/latest/bin/sdkmanager "$@"\n' "$HOME" > ~/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager
-          chmod +x ~/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager
 
       - name: Install Python dependencies
         run: |
