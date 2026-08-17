@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>J.A.R.V.I.S. - Install App</title>
+    <meta name="theme-color" content="#0a0e27">
+    <meta name="description" content="Just A Rather Very Intelligent System - Your Personal AI Assistant">
+    
+    <!-- PWA Support -->
+    <link rel="manifest" href="/pwa/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="J.A.R.V.I.S.">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            color: #e0e6ed;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            border: 1px solid rgba(100, 200, 255, 0.2);
+        }
+        
+        .logo {
+            font-size: 4em;
+            color: #64c8ff;
+            text-shadow: 0 0 30px rgba(100, 200, 255, 0.5);
+            margin-bottom: 20px;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { text-shadow: 0 0 20px rgba(100, 200, 255, 0.5); }
+            to { text-shadow: 0 0 40px rgba(100, 200, 255, 0.8); }
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            color: #64c8ff;
+            margin-bottom: 10px;
+            letter-spacing: 3px;
+        }
+        
+        .subtitle {
+            color: #8fa3b8;
+            margin-bottom: 30px;
+        }
+        
+        .features {
+            text-align: left;
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(100, 200, 255, 0.05);
+            border-radius: 10px;
+        }
+        
+        .feature {
+            padding: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .feature::before {
+            content: "✓";
+            color: #64c8ff;
+            font-weight: bold;
+        }
+        
+        .install-button {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #64c8ff 0%, #3b82f6 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 1.1em;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            margin: 10px;
+        }
+        
+        .install-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(100, 200, 255, 0.4);
+        }
+        
+        .apk-button {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        
+        .web-button {
+            background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+        }
+        
+        .info {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            font-size: 0.9em;
+            color: #8fa3b8;
+        }
+        
+        .server-status {
+            display: inline-block;
+            padding: 8px 16px;
+            background: rgba(74, 222, 128, 0.1);
+            border: 1px solid rgba(74, 222, 128, 0.3);
+            border-radius: 20px;
+            color: #4ade80;
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
+        
+        .loading {
+            display: none;
+            margin-top: 20px;
+        }
+        
+        .spinner {
+            border: 3px solid rgba(100, 200, 255, 0.2);
+            border-top: 3px solid #64c8ff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">J.A.R.V.I.S.</div>
+        <h1>J.A.R.V.I.S.</h1>
+        <div class="subtitle">Just A Rather Very Intelligent System</div>
+        
+        <div class="features">
+            <div class="feature">🎤 Voice Recognition with Wake Word</div>
+            <div class="feature">🧠 All 69+ Skills Available</div>
+            <div class="feature">🎭 Emotional Intelligence</div>
+            <div class="feature">💬 Natural Conversation</div>
+            <div class="feature">📱 Works on Any Device</div>
+            <div class="feature">🔒 Privacy First</div>
+        </div>
+        
+        <button class="install-button apk-button" onclick="installAPK()">
+            📦 Install APK
+        </button>
+        
+        <button class="install-button web-button" onclick="useWeb()">
+            🌐 Use Web App
+        </button>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p style="margin-top: 10px;">Connecting to J.A.R.V.I.S...</p>
+        </div>
+        
+        <div class="info">
+            <strong>Two ways to use J.A.R.V.I.S.:</strong><br><br>
+            <strong>1. APK:</strong> Install the Android app for native experience<br>
+            <strong>2. Web:</strong> Use directly in browser, install as PWA<br><br>
+            <em>Note: For full voice features, use the APK or connect to a running server</em>
+        </div>
+        
+        <div class="server-status" id="serverStatus">
+            Checking server status...
+        </div>
+    </div>
+    
+    <script>
+        // Check server status
+        async function checkServer() {
+            const statusEl = document.getElementById('serverStatus');
+            try {
+                const response = await fetch('/api/status');
+                if (response.ok) {
+                    const data = await response.json();
+                    statusEl.textContent = '● J.A.R.V.I.S. Online';
+                    statusEl.style.color = '#4ade80';
+                    statusEl.style.borderColor = 'rgba(74, 222, 128, 0.3)';
+                    statusEl.style.background = 'rgba(74, 222, 128, 0.1)';
+                } else {
+                    throw new Error('Server error');
+                }
+            } catch (e) {
+                statusEl.textContent = '● Server Offline - Install APK';
+                statusEl.style.color = '#f59e0b';
+                statusEl.style.borderColor = 'rgba(245, 158, 11, 0.3)';
+                statusEl.style.background = 'rgba(245, 158, 11, 0.1)';
+            }
+        }
+        
+        function installAPK() {
+            alert('To install J.A.R.V.I.S. APK:\n\n1. Build the APK using: python build_apk.py\n2. Or use GitHub Actions workflow\n3. Download the APK from GitHub releases\n4. Enable "Install from Unknown Sources"\n5. Install the APK\n\nSee README.md for detailed instructions.');
+        }
+        
+        function useWeb() {
+            window.location.href = '/';
+        }
+        
+        // Check for PWA install prompt
+        let deferredPrompt;
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Show install button
+            const installBtn = document.querySelector('.install-button.web-button');
+            if (installBtn) {
+                installBtn.textContent = '📲 Install App';
+                installBtn.onclick = async () => {
+                    if (deferredPrompt) {
+                        deferredPrompt.prompt();
+                        const { outcome } = await deferredPrompt.userChoice;
+                        deferredPrompt = null;
+                    }
+                };
+            }
+        });
+        
+        // Register service worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/pwa/service-worker.js')
+                .then(() => console.log('Service Worker registered'))
+                .catch(err => console.log('Service Worker failed:', err));
+        }
+        
+        // Check server on load
+        checkServer();
+        
+        // Check server every 30 seconds
+        setInterval(checkServer, 30000);
+    </script>
+</body>
+</html>
