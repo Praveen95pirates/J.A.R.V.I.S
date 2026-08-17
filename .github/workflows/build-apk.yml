@@ -16,8 +16,11 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Build Debug APK
-        working-directory: /github/workspace/android
         run: |
+          ls -la /github/workspace
+          cd /github/workspace/android
+          pwd
+          ls -la
           buildozer android debug
 
       - name: Upload Debug APK
