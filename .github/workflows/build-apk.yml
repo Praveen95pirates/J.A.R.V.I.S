@@ -10,97 +10,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      ANDROID_HOME: ${{ github.workspace }}/.android-sdk
-      ANDROID_SDK_ROOT: ${{ github.workspace }}/.android-sdk
+    container:
+      image: kivy/buildozer:stable
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-          cache: 'pip'
-
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            autoconf \
-            automake \
-            libtool \
-            pkg-config \
-            git \
-            zip \
-            unzip \
-            openjdk-17-jdk \
-            libncurses5-dev \
-            libstdc++6 \
-            libffi-dev \
-            libssl-dev \
-            zlib1g-dev \
-            wget \
-            curl
-
-      - name: Install Android SDK
-        run: |
-          mkdir -p $ANDROID_HOME/cmdline-tools/latest
-          cd $ANDROID_HOME/cmdline-tools/latest
-          wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline-tools.zip
-          unzip -q cmdline-tools.zip
-          rm cmdline-tools.zip
-          mv cmdline-tools/* .
-          rmdir cmdline-tools || true
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses >/dev/null || true
-          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0" >/dev/null
-        continue-on-error: false
-
-      - name: Set Java home
-        run: |
-          echo "JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64" >> $GITHUB_ENV
-          echo "$JAVA_HOME/bin" >> $GITHUB_PATH
-
-      - name: Prepare Buildozer Android SDK
-        run: |
-          mkdir -p ~/.buildozer/android/platform/android-sdk
-          cp -rf $ANDROID_HOME/cmdline-tools/latest ~/.buildozer/android/platform/android-sdk/cmdline-tools || true
-          mkdir -p ~/.buildozer/android/platform/android-sdk/build-tools/34.0.0
-          cp -rf $ANDROID_HOME/build-tools/34.0.0/* ~/.buildozer/android/platform/android-sdk/build-tools/34.0.0/ || true
-          mkdir -p ~/.buildozer/android/platform/android-sdk/platform-tools
-          cp -rf $ANDROID_HOME/platform-tools/* ~/.buildozer/android/platform/android-sdk/platform-tools/ || true
-          mkdir -p ~/.buildozer/android/platform/android-sdk/platforms/android-34
-          cp -rf $ANDROID_HOME/platforms/android-34/* ~/.buildozer/android/platform/android-sdk/platforms/android-34/ || true
-
-      - name: Install Python dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install --upgrade cython==0.29.33
-          pip install git+https://github.com/kivy/buildozer.git
-          pip install -r requirements.txt
-
-      - name: Create app icon and splash
-        run: |
-          python build_apk_assets.py
-
-      - name: Initialize Buildozer
-        working-directory: ./android
-        run: |
-          if [ ! -f buildozer.spec ]; then
-            buildozer init
-          fi
-
-      - name: Cache Buildozer
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.buildozer
-            ~/.android
-            ~/.gradle
-          key: buildozer-${{ hashFiles('android/buildozer.spec') }}
-          restore-keys: buildozer-
-
       - name: Build Debug APK
-        working-directory: ./android
+        working-directory: /github/workspace/android
         run: |
           buildozer android debug
 
@@ -108,7 +24,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: JARVIS-debug-apk
-          path: android/bin/*.apk
+          path: |
+            /github/workspace/android/bin/*.apk
           retention-days: 30
           compression-level: 9
 
@@ -117,23 +34,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: buildozer-logs
-          path: android/.buildozer/logs/
+          path: /github/workspace/android/.buildozer/logs/
           retention-days: 7
-
-      - name: Create Release APK
-        if: startsWith(github.ref, 'refs/tags/v')
-        working-directory: ./android
-        run: |
-          buildozer android release
-
-      - name: Upload Release APK
-        if: startsWith(github.ref, 'refs/tags/v')
-        uses: softprops/action-gh-release@v1
-        with:
-          files: android/bin/*-release.apk
-          generate_release_notes: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   test:
     runs-on: ubuntu-latest
